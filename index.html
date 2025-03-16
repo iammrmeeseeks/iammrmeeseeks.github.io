@@ -1,50 +1,138 @@
-<!DOCTYPE HTML>
-<!--
-	Aerial by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Meet Mr Meeseeks</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
-		<div id="wrapper">
-			<div id="bg"></div>
-			<div id="overlay"></div>
-			<div id="main">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Space</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        body {
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+            perspective: 1000px;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .content {
+            position: absolute;
+            text-align: center;
+            transform-style: preserve-3d;
+            will-change: transform;
+            transition: transform 0.2s ease-out;
+        }
+        h1 {
+            font-size: 3rem;
+            text-shadow: 0 0 20px white;
+        }
+        .icons {
+            margin-top: 20px;
+        }
+        .icon {
+            font-size: 2rem;
+            margin: 0 10px;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.3s ease-out;
+        }
+        .icon:hover {
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="spaceCanvas"></canvas>
+    <div class="content" id="content">
+        <h1>Mr Meeseeks</h1>
+        <div class="icons">
+            <a href="https://github.com/iammrmeeseeks" class="icon" target="_blank">🚀</a>
+    
+            <a href="mailto:contactmrmeeseeks@gmail.com" class="icon">📧</a>
+    
+            <img src="https://komarev.com/ghpvc/?username=iammrmeeseeks&color=green" alt="Profile Views" class="icon">
+    
+            <a href="https://www.linkedin.com/in/milind-joshi-url/" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20" alt="LinkedIn" class="icon">
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById("spaceCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-				<!-- Header -->
-					<header id="header">
-						<h1>Mr Meeseeks</h1>
-						<p>Software Engineer &nbsp;&bull;&nbsp; Let's build together</p>
-						<p>A software engineer living on Terra!</p>
-						<nav>
-							<ul>
-								<!-- <li><a href="#" class="icon brands fa-twitter"><span class="label">Twitter</span></a></li>
-								<li><a href="#" class="icon brands fa-facebook-f"><span class="label">Facebook</span></a></li>
-								<li><a href="#" class="icon brands fa-dribbble"><span class="label">Dribbble</span></a></li> -->
-								<li><a href="https://github.com/iammrmeeseeks" class="icon brands fa-github"><span class="label">Github</span></a></li>
-								<li><a href="mailto:contactmrmeeseeks@gmail.com" class="icon solid fa-envelope"><span class="label">Email</span></a></li>
-							</ul>
-						</nav>
-					</header>
+        let stars = [];
+        const numStars = 300;
+        let speed = 4;
+        let tiltX = 0, tiltY = 0;
 
-				<!-- Footer -->
-					<footer id="footer">
-						<span class="copyright">&copy; Untitled. Design: <a href="http://html5up.net">HTML5 UP</a>.</span>
-					</footer>
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                z: Math.random() * canvas.width
+            });
+        }
 
-			</div>
-		</div>
-		<script>
-			window.onload = function() { document.body.classList.remove('is-preload'); }
-			window.ontouchmove = function() { return false; }
-			window.onorientationchange = function() { document.body.scrollTop = 0; }
-		</script>
-	</body>
+        function updateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let star of stars) {
+                star.z -= speed;
+                if (star.z <= 0) {
+                    star.x = Math.random() * canvas.width;
+                    star.y = Math.random() * canvas.height;
+                    star.z = canvas.width;
+                }
+
+                let sx = (star.x - canvas.width / 2) * (canvas.width / star.z) + tiltX;
+                let sy = (star.y - canvas.height / 2) * (canvas.width / star.z) + tiltY;
+                let radius = 2 * (1 - star.z / canvas.width);
+
+                ctx.beginPath();
+                ctx.arc(sx + canvas.width / 2, sy + canvas.height / 2, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = "white";
+                ctx.fill();
+            }
+            requestAnimationFrame(updateStars);
+        }
+
+        updateStars();
+
+        window.addEventListener("resize", () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        document.querySelectorAll('.icon').forEach(icon => {
+            icon.addEventListener('mouseover', () => {
+                speed = 8;
+            });
+            icon.addEventListener('mouseout', () => {
+                speed = 4;
+            });
+        });
+
+        document.addEventListener("mousemove", (event) => {
+            let centerX = window.innerWidth / 2;
+            let centerY = window.innerHeight / 2;
+            tiltX = (event.clientX - centerX) * 0.03;
+            tiltY = (event.clientY - centerY) * 0.03;
+            document.getElementById("content").style.transform = `translate(${tiltX}px, ${tiltY}px) rotateY(${tiltX}deg) rotateX(${-tiltY}deg)`;
+        });
+    </script>
+</body>
 </html>
